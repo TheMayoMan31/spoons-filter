@@ -56,8 +56,50 @@ with tab2:
     if options:
         df = df[df['category'].str.lower().str.strip().isin(options)]
 
-    fig = px.scatter(df, x='price', y='units', hover_name='productname')
-    st.plotly_chart(fig)
+    drink_search = st.text_input(
+        "Search for a drink to highlight",
+        placeholder="e.g. Budweiser",
+        key="graph_drink_search",
+    ).strip()
+
+    product_names = df['productname'].fillna('').astype(str)
+    matching_drinks = (
+        product_names.str.contains(drink_search, case=False, regex=False)
+        if drink_search
+        else pd.Series(False, index=df.index)
+    )
+
+    fig = px.scatter(
+        df,
+        x='price',
+        y='units',
+        hover_name='productname',
+        trendline="ols",
+    )
+    fig.update_traces(
+        marker={
+            'color': [
+                '#e74c3c' if is_match else '#7f8c8d'
+                for is_match in matching_drinks
+            ],
+            'size': [
+                12 if is_match else 7
+                for is_match in matching_drinks
+            ],
+        },
+    )
+
+    if drink_search:
+        match_count = int(matching_drinks.sum())
+        if match_count:
+            st.caption(f"Highlighted {match_count} matching portion(s).")
+        else:
+            st.caption("No matching drinks found.")
+
+    st.plotly_chart(
+        fig,
+        alt="Drink price versus alcohol units, with matching drinks highlighted",
+    )
 
 
 
