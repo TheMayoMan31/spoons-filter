@@ -1,6 +1,28 @@
-.venv/
+# Python
 __pycache__/
+*.py[cod]
+*.so
+.Python
+.venv/
+venv/
+env/
+
+# Local tooling
 .idea/
-*.pyc
+.vscode/
+
+# Local configuration and secrets
+.streamlit/secrets.toml
+.env
+.env.*
+!.env.example
+
+# Generated exports and API snapshots
 export.csv
 specificLocation.csv
+raw_*.json
+
+# Test and coverage output
+.pytest_cache/
+.coverage
+htmlcov/
